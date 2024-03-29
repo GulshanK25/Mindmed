@@ -1,0 +1,36 @@
+import unittest
+from unittest.mock import MagicMock
+import mysql.connector as con
+from unittest.mock import patch
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from mental_health_management_system import MainWindow
+
+class TestLogin(unittest.TestCase):
+    
+    def setUp(self):
+        self.widget = MagicMock()
+        self.widget.tb01.text.return_value = ""
+        self.widget.tb02.text.return_value = ""
+        
+    def test_valid_login(self):
+        self.widget.login()
+        self.assertTrue(self.widget.menubar.isVisible())
+        self.assertEqual(self.widget.tabWidget.currentIndex(), 1)
+        self.assertFalse(QMessageBox.information.called)
+        self.assertFalse(self.widget.l01.setText.called)
+        
+    def test_invalid_login(self):
+        self.widget.tb01.text.return_value = "admin"
+        self.widget.tb02.text.return_value = "password"
+        self.widget.login()
+        self.assertFalse(self.widget.menubar.isVisible())
+        self.assertNotEqual(self.widget.tabWidget.currentIndex(), 1)
+        QMessageBox.information.assert_called_once_with(self.widget, "Mental Health Management System", "Invalid admin login details, Try again !")
+        self.widget.l01.setText.assert_called_once_with("Invalid admin login details, Try again !")
+
+       
+
+
+        
+if __name__ == '__main__':
+    unittest.main()
